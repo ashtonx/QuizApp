@@ -2,8 +2,7 @@ package com.example.android.quizapp;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.TextView;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -12,8 +11,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static android.util.Log.wtf;
+import java.util.Random;
+import java.util.Vector;
 
 //4-10 questions
 //question types:
@@ -24,77 +23,144 @@ import static android.util.Log.wtf;
 
 public class MainActivity extends AppCompatActivity {
 //GLOBAL Types
-    private final int NUMBER_OF_QUESTIONS = 10; // for now 10, maybe random 4-10 or settings later
-    ArrayList<QuizData> Qdata; //store QA data
+    private final int NUMBER_OF_QUESTIONS=10;
+    private final int NUMBER_OF_MULTIPLE_ANSWERS=4;
+    private final String FILE_NAME = "kana.xml";
+   // ArrayList<QuizData> Qdata; //store QA data
     public enum Qtype {FREE, MULTIPLE, SINGLE};
-    Qtype[] type = new Qtype[NUMBER_OF_QUESTIONS]; //size of [number of questions]
+    Random rand = new Random();
 
-    XmlParser parser = new XmlParser();
-    List<Kana> ktmp = null;
-    InputStream kana = null;
-    String k_romaji=null;
-    String k_hiragana=null;
-    String k_katakana=null;
+    List<Kana> parsed_data = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        start();
     }
-    public void getData(){
+
+    public void start(){
+        parsed_data = parseFile(FILE_NAME);
+        generateQuiz();
+    }
+
+    private void generateQuiz(){
+        Collections.shuffle(parsed_data);
+        Qtype tmp_type;
+
+        for (int i = 0; i<NUMBER_OF_QUESTIONS; ++i) {
+            tmp_type = Qtype.values()[rand.nextInt(Qtype.values().length)];
+            switch(tmp_type){
+                case SINGLE:
+                    generateSingleQuestion(parsed_data.get(i));
+                    break;
+                case MULTIPLE:
+                    generateMultipleQuestion(parsed_data.get(i));
+                    break;
+                case FREE:
+                    generateFreeQuestion(parsed_data.get(i));
+            }
+        }
+    }
+
+    private void generateSingleQuestion(Kana data) {
+        String question = "Choose ";
+        Vector<String> answers = new Vector<>(NUMBER_OF_MULTIPLE_ANSWERS);
+
+        Boolean questionRomaji = rand.nextBoolean();
+        if (questionRomaji) {
+            getRandomKana(answers);
+            boolean AnswerHiragana = rand.nextBoolean();
+            if (AnswerHiragana) {
+                question += "Hiragana for " + data.romaji + " :";
+                answers.set(0, data.hiragana);
+            } else {
+                question += "Katakana for " + data.romaji + " :";
+                answers.set(0, data.katakana);
+            }
+        } else { //if question is not romaji,
+            getRandomRomaji(answers);
+            answers.set(0, data.romaji);
+            question += "Romaji for ";
+            boolean QuestionHiragana = rand.nextBoolean();
+            if (QuestionHiragana) question += data.hiragana + " :";
+            else question += data.katakana +": ";
+
+        } // damn this is a mess
+        Collections.shuffle(answers);
+        displaySingleQuestion(question,answers);
+    }
+
+    private void generateMultipleQuestion(Kana data){
+        String question = "Chose Hiragana and Katakana for "+ data.romaji +" :";
+        Vector<String> answers = new Vector<>(NUMBER_OF_MULTIPLE_ANSWERS);
+        getRandomKana(answers);
+        answers.set(0,data.hiragana);
+        answers.set(1,data.katakana);
+        Collections.shuffle(answers);
+        displayMultipleQuestion(question,answers);
+    }
+    private void generateFreeQuestion(Kana data){
+        //assuming users don't have an input for katakana, that and i'm already overdoing this app;
+        String question="Type Romaji for ";
+        boolean questionHiragana = rand.nextBoolean();
+        if(questionHiragana) question +=data.hiragana + " :";
+        else question+=data.katakana + " :";
+        displayFreeQuestion(question);
+    }
+
+    public void displaySingleQuestion(String question, Vector<String> answers){
+        Log.i("displaySingle","Question: "+question);
+        for (int i = 0; i<answers.size();++i){
+            Log.i("displaySingle","Answer "+i+" "+answers.elementAt(i));
+        }
+    }
+    public void displayMultipleQuestion(String question, Vector<String> answers){
+        Log.i("displayMulti","Question: "+question);
+        for (int i = 0; i<answers.size();++i){
+            Log.i("displayMulti","Answer "+i+" "+answers.elementAt(i));
+        }
+    }
+    public void displayFreeQuestion(String question){
+        Log.i("displayFree",question);
+    }
+
+    private void getRandomRomaji(Vector<String> answers){
+        for (int i = 0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i)
+        answers.add(parsed_data.get(rand.nextInt(parsed_data.size())).romaji);
+    }
+
+    private void getRandomKana(Vector<String> answers){
+        Boolean kana;
+        for(int i = 0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i) {
+            kana = rand.nextBoolean();//1 hiragana, 0 katakana
+            if (kana) {
+                answers.add(parsed_data.get(rand.nextInt(parsed_data.size())).hiragana);
+            } else {
+                answers.add(parsed_data.get(rand.nextInt(parsed_data.size())).katakana);
+            }
+        }
+    }
+
+    private List parseFile(String in) {
+        List out = new ArrayList();
+        XmlParser parser = new XmlParser();
+        InputStream is = null;
         try {
-            kana = getAssets().open("kana.xml");
-            ktmp = parser.parse(kana);
-            kana.close();
+            is = getAssets().open(in);
+            out = parser.parse(is);
+            is.close();
         }
-        catch(IOException e){}
-        catch(XmlPullParserException y){}
-    }
-
-
-    public String getString(){
-        getData();
-        String ts="";
-        Kana tk = new Kana("","","");
-        for (int i = 0; i<ktmp.size();++i){
-            tk = (Kana) ktmp.get(i);
-            ts+=tk.romaji+"\t"+tk.hiragana+"\t"+tk.katakana+"\n";
+        catch (IOException e) {
+            Log.e("getData", e.getMessage());
         }
-        return ts;
-    }
-    public void refresh (View v){
-        TextView mtxt = (TextView) findViewById(R.id.screen_text);
-        String s = getString();
-
-        mtxt.setText(s);
-        wtf("refresh", s);
-    }
-
-    public class QuizData {
-        Qtype type;
-        Kana data;
-    }
-
-    private void randomize(){
-        Collections.shuffle(Qdata); // randomize questions;
-        //FILL Qtype at least one of each,
-        //Shuffle Qtype
+        catch (XmlPullParserException e) {
+            Log.e("getData", e.getMessage());
+        }
+        return out;
     }
 }
 
-//TODO Store QA Data
-// format: [Romaji] [Hiragana] [Katakana]
-// in separate file.
-// options:
-// xml - lot of work, will still need to store it somewhere..
-// Shared Preferences
-// Internal Storage -  would still need to parse it...
-// External Storage - pointless
-// SQLite DB - bit overdone but not bad ?
-
-//TODO Read in QA Data
-// in: data stream
-// out: QA Data - Array of Q Class
 // TODO Randomize Order
 // in: Randomize QAdata,
 // Qtype[] = fill 1-3, at least one of each.
