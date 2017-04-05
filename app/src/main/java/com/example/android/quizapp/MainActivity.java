@@ -161,15 +161,7 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-// TODO Randomize Order
-// in: Randomize QAdata,
-// Qtype[] = fill 1-3, at least one of each.
-//TODO Generate question.
-// in: int curr
-// get type
-// Questions[]
-// get random fake answers
-//generate Q,A,A,A
+
 //TODO Display Question
 // in: Q, A, A, A
 // out: formated display
