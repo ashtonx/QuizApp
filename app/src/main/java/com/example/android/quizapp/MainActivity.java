@@ -223,9 +223,7 @@ public class MainActivity extends AppCompatActivity {
 }
 
 
-//TODO Display Question
-// in: Q, A, A, A
-// out: formated display
+
 //TODO Get Answer
 // view input, get answer(s).
 //get answer to a question, send it for checks.
@@ -240,4 +238,5 @@ public class MainActivity extends AppCompatActivity {
 //check if done, if not generate new question if it's ok display Finished.
 //TODO Finished
 // Display Results, option to reset.
+//TODO Clean and polish
 //TODO Settings ?
