@@ -3,6 +3,11 @@ package com.example.android.quizapp;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -30,12 +35,21 @@ public class MainActivity extends AppCompatActivity {
     public enum Qtype {FREE, MULTIPLE, SINGLE};
     Random rand = new Random();
 
+    LinearLayout layoutCheckbox;
+    LinearLayout layoutRadio;
+    LinearLayout layoutText;
+    LinearLayout QuestionsLL;
+
     List<Kana> parsed_data = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        layoutCheckbox = (LinearLayout) findViewById(R.id.layout_checkbox);
+        layoutRadio = (LinearLayout) findViewById(R.id.layout_radio);
+        layoutText = (LinearLayout) findViewById(R.id.layout_text_entry);
+        QuestionsLL= (LinearLayout) findViewById(R.id.questions);
         start();
     }
 
@@ -120,18 +134,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displaySingleQuestion(int qIt, String question,String answer_type, Vector<String> answers){
+        View tmp = getLayoutInflater().inflate(R.layout.question_radio,layoutRadio,false);
+
+        TextView tv = (TextView) tmp.findViewById(R.id.question_field);
+        tv.setText("("+(qIt+1)+") "+ question);
+
+        RadioButton[] viewAnswers = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
+        viewAnswers[0]=(RadioButton) tmp.findViewById(R.id.answer1);
+        viewAnswers[1]=(RadioButton) tmp.findViewById(R.id.answer2);
+        viewAnswers[2]=(RadioButton) tmp.findViewById(R.id.answer3);
+        viewAnswers[3]=(RadioButton) tmp.findViewById(R.id.answer4);
+        //wonder if there's a way around it...
+        for (int i=0; i< NUMBER_OF_MULTIPLE_ANSWERS;++i){
+            viewAnswers[i].setText(answers.get(i));
+        }
+        QuestionsLL.addView(tmp);
+        //log
         Log.i("displaySingle","Question("+qIt+"): "+question+" ("+answer_type+")");
         for (int i = 0; i<answers.size();++i){
             Log.i("displaySingle","Answer "+i+" "+answers.elementAt(i));
         }
     }
     public void displayMultipleQuestion(int qIt, String question, Vector<String> answers){
+        View tmp = getLayoutInflater().inflate(R.layout.question_checkbox,layoutCheckbox,false);
+
+        TextView tv = (TextView) tmp.findViewById(R.id.question_field);
+        tv.setText("("+(qIt+1)+") "+question);
+
+        CheckBox[] viewAnswers = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
+        viewAnswers[0]=(CheckBox) tmp.findViewById(R.id.answer1);
+        viewAnswers[1]=(CheckBox) tmp.findViewById(R.id.answer2);
+        viewAnswers[2]=(CheckBox) tmp.findViewById(R.id.answer3);
+        viewAnswers[3]=(CheckBox) tmp.findViewById(R.id.answer4);
+
+        for (int i=0; i< NUMBER_OF_MULTIPLE_ANSWERS;++i){
+            viewAnswers[i].setText(answers.get(i));
+        }
+        QuestionsLL.addView(tmp);
+        //log
         Log.i("displayMulti","Question ("+qIt+"): "+question);
         for (int i = 0; i<answers.size();++i){
             Log.i("displayMulti","Answer ("+i+"): "+answers.elementAt(i));
         }
     }
     public void displayFreeQuestion(int qIt, String question){
+        View tmp = getLayoutInflater().inflate(R.layout.question_text_entry,layoutText,false);
+        TextView tv = (TextView) tmp.findViewById(R.id.question_field);
+        tv.setText("("+(qIt+1)+") "+question);
+        QuestionsLL.addView(tmp);
+        //log
         Log.i("displayFree","Question ("+qIt+"): "+question);
     }
 
