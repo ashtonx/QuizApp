@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private final int NUMBER_OF_QUESTIONS=10;
     private final int NUMBER_OF_MULTIPLE_ANSWERS=4;
     private final String FILE_NAME = "kana.xml";
-   // ArrayList<QuizData> Qdata; //store QA data
+    ArrayList<Kana> generated_questions=new ArrayList<>(); //for reference during checks
     public enum Qtype {FREE, MULTIPLE, SINGLE};
     Random rand = new Random();
 
@@ -52,87 +52,97 @@ public class MainActivity extends AppCompatActivity {
             tmp_type = Qtype.values()[rand.nextInt(Qtype.values().length)];
             switch(tmp_type){
                 case SINGLE:
-                    generateSingleQuestion(parsed_data.get(i));
+                    generateSingleQuestion(parsed_data.get(i),i);
                     break;
                 case MULTIPLE:
-                    generateMultipleQuestion(parsed_data.get(i));
+                    generateMultipleQuestion(parsed_data.get(i),i);
                     break;
                 case FREE:
-                    generateFreeQuestion(parsed_data.get(i));
+                    generateFreeQuestion(parsed_data.get(i),i);
             }
+            generated_questions.add(parsed_data.get(i));
         }
+        parsed_data.clear(); //no need for it anymore;
     }
 
-    private void generateSingleQuestion(Kana data) {
-        String question = "Choose ";
+    private void generateSingleQuestion(Kana data, int qIt) {
+        String question;
+        String answer_type;
+        String question_char;
         Vector<String> answers = new Vector<>(NUMBER_OF_MULTIPLE_ANSWERS);
 
         Boolean questionRomaji = rand.nextBoolean();
         if (questionRomaji) {
-            getRandomKana(answers);
             boolean AnswerHiragana = rand.nextBoolean();
-            if (AnswerHiragana) {
-                question += "Hiragana for " + data.romaji + " :";
-                answers.set(0, data.hiragana);
-            } else {
-                question += "Katakana for " + data.romaji + " :";
-                answers.set(0, data.katakana);
-            }
-        } else { //if question is not romaji,
-            getRandomRomaji(answers);
-            answers.set(0, data.romaji);
-            question += "Romaji for ";
-            boolean QuestionHiragana = rand.nextBoolean();
-            if (QuestionHiragana) question += data.hiragana + " :";
-            else question += data.katakana +": ";
 
-        } // damn this is a mess
+            if (AnswerHiragana) {
+                answer_type = "Hiragana";
+                answers.add(data.hiragana);
+            } else {
+                answer_type = "Katakana";
+                answers.add(data.katakana);
+            }
+            question_char=data.romaji;
+            getRandomKana(answers);
+        } else {
+            answer_type="Romaji";
+            answers.add(data.romaji);
+            getRandomRomaji(answers);
+            boolean QuestionHiragana = rand.nextBoolean();
+
+            if (QuestionHiragana) question_char=data.hiragana;
+            else question_char=data.katakana;
+        }
+        question = "Choose "+answer_type+" for "+question_char+" :";
         Collections.shuffle(answers);
-        displaySingleQuestion(question,answers);
+        displaySingleQuestion(qIt,question,answer_type,answers);
     }
 
-    private void generateMultipleQuestion(Kana data){
+    private void generateMultipleQuestion(Kana data, int qIt){
         String question = "Chose Hiragana and Katakana for "+ data.romaji +" :";
         Vector<String> answers = new Vector<>(NUMBER_OF_MULTIPLE_ANSWERS);
+        answers.add(data.hiragana);
+        answers.add(data.katakana);
         getRandomKana(answers);
-        answers.set(0,data.hiragana);
-        answers.set(1,data.katakana);
         Collections.shuffle(answers);
-        displayMultipleQuestion(question,answers);
+        displayMultipleQuestion(qIt,question,answers);
     }
-    private void generateFreeQuestion(Kana data){
+    private void generateFreeQuestion(Kana data, int qIt){
         //assuming users don't have an input for katakana, that and i'm already overdoing this app;
-        String question="Type Romaji for ";
+        String question;
+        String question_char;
         boolean questionHiragana = rand.nextBoolean();
-        if(questionHiragana) question +=data.hiragana + " :";
-        else question+=data.katakana + " :";
-        displayFreeQuestion(question);
+        if(questionHiragana) question_char=data.hiragana;
+        else question_char=data.katakana;
+        question = "Type Romaji for "+question_char+" :";
+
+        displayFreeQuestion(qIt, question);
     }
 
-    public void displaySingleQuestion(String question, Vector<String> answers){
-        Log.i("displaySingle","Question: "+question);
+    public void displaySingleQuestion(int qIt, String question,String answer_type, Vector<String> answers){
+        Log.i("displaySingle","Question("+qIt+"): "+question+" ("+answer_type+")");
         for (int i = 0; i<answers.size();++i){
             Log.i("displaySingle","Answer "+i+" "+answers.elementAt(i));
         }
     }
-    public void displayMultipleQuestion(String question, Vector<String> answers){
-        Log.i("displayMulti","Question: "+question);
+    public void displayMultipleQuestion(int qIt, String question, Vector<String> answers){
+        Log.i("displayMulti","Question ("+qIt+"): "+question);
         for (int i = 0; i<answers.size();++i){
-            Log.i("displayMulti","Answer "+i+" "+answers.elementAt(i));
+            Log.i("displayMulti","Answer ("+i+"): "+answers.elementAt(i));
         }
     }
-    public void displayFreeQuestion(String question){
-        Log.i("displayFree",question);
+    public void displayFreeQuestion(int qIt, String question){
+        Log.i("displayFree","Question ("+qIt+"): "+question);
     }
 
     private void getRandomRomaji(Vector<String> answers){
-        for (int i = 0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i)
+        while (answers.size()<NUMBER_OF_MULTIPLE_ANSWERS)
         answers.add(parsed_data.get(rand.nextInt(parsed_data.size())).romaji);
     }
 
     private void getRandomKana(Vector<String> answers){
         Boolean kana;
-        for(int i = 0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i) {
+        while(answers.size()<NUMBER_OF_MULTIPLE_ANSWERS){
             kana = rand.nextBoolean();//1 hiragana, 0 katakana
             if (kana) {
                 answers.add(parsed_data.get(rand.nextInt(parsed_data.size())).hiragana);
