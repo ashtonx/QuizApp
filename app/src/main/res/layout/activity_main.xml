@@ -20,13 +20,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <ListView
             android:id="@+id/questions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <!--THIS IS WHERE QUESTION GO-->
-        </LinearLayout>
+        </ListView>
     </ScrollView>
 
 </LinearLayout>

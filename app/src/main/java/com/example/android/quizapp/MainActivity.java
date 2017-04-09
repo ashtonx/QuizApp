@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -41,10 +43,14 @@ public class MainActivity extends AppCompatActivity {
     private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
     List<Question> quizData = new ArrayList<>();
 
+    public enum QuestionType {FREE, MULTIPLE, SINGLE}
+    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
+
+    final int SUBMIT_ID = 42;
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
-    LinearLayout QuestionsLL;
+    ListView questionsLV;
 
     List<Kana> parsedData = null;
     Random rand = new Random();
@@ -56,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         layoutCheckbox = (LinearLayout) findViewById(R.id.layout_checkbox);
         layoutRadio = (LinearLayout) findViewById(R.id.layout_radio);
         layoutText = (LinearLayout) findViewById(R.id.layout_text_entry);
-        QuestionsLL = (LinearLayout) findViewById(R.id.questions);
+        questionsLV = (ListView) findViewById(R.id.questions);
         start();
     }
 
@@ -83,12 +89,13 @@ public class MainActivity extends AppCompatActivity {
                     questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
                     questionTV.setTag(question.questionType);
                     questionTV.setId(questionNumber);
-                    QuestionsLL.addView(layout);
+                    questionsLV.addView(layout);
                     break;
                 case MULTIPLE:
                     layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
                     questionTV = (TextView) layout.findViewById(R.id.question_field);
                     questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
+                    questionTV.setId(questionNumber);
                     questionTV.setTag(question.questionType);
                     answersCheckBox[0] = (CheckBox) layout.findViewById(R.id.answer1);
                     answersCheckBox[1] = (CheckBox) layout.findViewById(R.id.answer2);
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
                         answersCheckBox[i].setText(question.answers.get(i));
                     }
-                    QuestionsLL.addView(layout);
+                    questionsLV.addView(layout);
                     //log
                     Log.i("displayMulti", "Question (" + questionNumber + "): " + question.question);
                     for (int i = 0; i < question.answers.size(); ++i) {
@@ -106,19 +113,20 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case SINGLE:
-                    View tmp = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
-                    TextView tv = (TextView) tmp.findViewById(R.id.question_field);
-                    tv.setText("(" + (questionNumber + 1) + ") " + question.question);
-                    tv.setTag(question.questionType);
-                    answersRadio[0] = (RadioButton) tmp.findViewById(R.id.answer1);
-                    answersRadio[1] = (RadioButton) tmp.findViewById(R.id.answer2);
-                    answersRadio[2] = (RadioButton) tmp.findViewById(R.id.answer3);
-                    answersRadio[3] = (RadioButton) tmp.findViewById(R.id.answer4);
+                    layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
+                    questionTV = (TextView) layout.findViewById(R.id.question_field);
+                    questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
+                    questionTV.setId(questionNumber);
+                    questionTV.setTag(question.questionType);
+                    answersRadio[0] = (RadioButton) layout.findViewById(R.id.answer1);
+                    answersRadio[1] = (RadioButton) layout.findViewById(R.id.answer2);
+                    answersRadio[2] = (RadioButton) layout.findViewById(R.id.answer3);
+                    answersRadio[3] = (RadioButton) layout.findViewById(R.id.answer4);
                     //wonder if there's a way around it...
                     for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
                         answersRadio[i].setText(question.answers.get(i));
                     }
-                    QuestionsLL.addView(tmp);
+                    questionsLV.addView(layout);
                     //log
                     Log.i("displaySingle", "Question(" + questionNumber + "): " + question.question + " (" + question.answer_type.toString() + ")");
                     for (int i = 0; i < question.answers.size(); ++i) {
@@ -127,6 +135,33 @@ public class MainActivity extends AppCompatActivity {
                     }
             }
         }
+        //add button
+        Buttons submit = new Buttons("Submit", SUBMIT_ID,  (Button) getLayoutInflater().inflate(R.layout.button,null));
+        questionsLV.addView(submit.buttonSubmit);
+    }
+
+    public class Buttons implements View.OnClickListener {
+        public Button buttonSubmit;
+
+        Buttons(String text, int ID, Button layout){
+            buttonSubmit = layout;
+            buttonSubmit.setText(text);
+            buttonSubmit.setId(ID);
+            buttonSubmit.setOnClickListener(this);
+        }
+
+
+        public void onClick(View v){
+            switch (v.getId()){
+                case SUBMIT_ID:
+                    countScore(v);
+                    break;
+            }
+        }
+    }
+
+    private void countScore(View v){
+
     }
 
     private List parseFile(String in) {
@@ -237,10 +272,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    public enum QuestionType {FREE, MULTIPLE, SINGLE}
-
-    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
 
     public final class Question {
         public final Kana data;
