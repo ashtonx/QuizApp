@@ -4,10 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
+import static android.util.Log.wtf;
 import static com.example.android.quizapp.MainActivity.KanaType.HIRAGANA;
 import static com.example.android.quizapp.MainActivity.KanaType.KATAKANA;
 import static com.example.android.quizapp.MainActivity.KanaType.ROMAJI;
@@ -34,7 +34,7 @@ import static com.example.android.quizapp.MainActivity.QuestionType.SINGLE;
 // free text response.
 // checkboxes (multiple  answers?)
 // radio - one answer
-// submit button.
+// submit score.
 
 public class MainActivity extends AppCompatActivity {
     //GLOBAL Types
@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
-    ListView questionsLV;
+    LinearLayout layoutScore;
+    LinearLayout questionsLL;
 
     List<Kana> parsedData = null;
     Random rand = new Random();
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         layoutCheckbox = (LinearLayout) findViewById(R.id.layout_checkbox);
         layoutRadio = (LinearLayout) findViewById(R.id.layout_radio);
         layoutText = (LinearLayout) findViewById(R.id.layout_text_entry);
-        questionsLV = (ListView) findViewById(R.id.questions);
+        layoutScore = (LinearLayout) findViewById(R.id.layout_score);
+        questionsLL = (LinearLayout) findViewById(R.id.questions);
         start();
     }
 
@@ -75,94 +77,56 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayQuestions(List<Question> quizData) {
-        View layout;
-        TextView questionTV;
-        CheckBox[] answersCheckBox = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
-        RadioButton[] answersRadio = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
-
+        ArrayList<View> questions = new ArrayList<>();
         for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
-            Question question = quizData.get(questionNumber);
-            switch (question.questionType) {
-                case FREE:
-                    layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
-                    questionTV = (TextView) layout.findViewById(R.id.question_field);
-                    questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
-                    questionTV.setTag(question.questionType);
-                    questionTV.setId(questionNumber);
-                    questionsLV.addView(layout);
-                    break;
-                case MULTIPLE:
-                    layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
-                    questionTV = (TextView) layout.findViewById(R.id.question_field);
-                    questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
-                    questionTV.setId(questionNumber);
-                    questionTV.setTag(question.questionType);
-                    answersCheckBox[0] = (CheckBox) layout.findViewById(R.id.answer1);
-                    answersCheckBox[1] = (CheckBox) layout.findViewById(R.id.answer2);
-                    answersCheckBox[2] = (CheckBox) layout.findViewById(R.id.answer3);
-                    answersCheckBox[3] = (CheckBox) layout.findViewById(R.id.answer4);
-                    for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
-                        answersCheckBox[i].setText(question.answers.get(i));
-                    }
-                    questionsLV.addView(layout);
-                    //log
-                    Log.i("displayMulti", "Question (" + questionNumber + "): " + question.question);
-                    for (int i = 0; i < question.answers.size(); ++i) {
-                        Log.i("displayMulti", "Answer (" + i + "): " + question.answers.elementAt(i));
-                    }
-                    break;
-
-                case SINGLE:
-                    layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
-                    questionTV = (TextView) layout.findViewById(R.id.question_field);
-                    questionTV.setText("(" + (questionNumber + 1) + ") " + question.question);
-                    questionTV.setId(questionNumber);
-                    questionTV.setTag(question.questionType);
-                    answersRadio[0] = (RadioButton) layout.findViewById(R.id.answer1);
-                    answersRadio[1] = (RadioButton) layout.findViewById(R.id.answer2);
-                    answersRadio[2] = (RadioButton) layout.findViewById(R.id.answer3);
-                    answersRadio[3] = (RadioButton) layout.findViewById(R.id.answer4);
-                    //wonder if there's a way around it...
-                    for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
-                        answersRadio[i].setText(question.answers.get(i));
-                    }
-                    questionsLV.addView(layout);
-                    //log
-                    Log.i("displaySingle", "Question(" + questionNumber + "): " + question.question + " (" + question.answer_type.toString() + ")");
-                    for (int i = 0; i < question.answers.size(); ++i) {
-                        Log.i("displaySingle", "Answer " + i + " " + question.answers.elementAt(i));
-                        break;
-                    }
-            }
+            questionsLL.addView(generateQuestionView(quizData.get(questionNumber),questionNumber));
         }
-        //add button
-        Buttons submit = new Buttons("Submit", SUBMIT_ID,  (Button) getLayoutInflater().inflate(R.layout.button,null));
-        questionsLV.addView(submit.buttonSubmit);
+        View score= getLayoutInflater().inflate(R.layout.score, layoutScore, false);
+        questionsLL.addView(score);
     }
 
-    public class Buttons implements View.OnClickListener {
-        public Button buttonSubmit;
-
-        Buttons(String text, int ID, Button layout){
-            buttonSubmit = layout;
-            buttonSubmit.setText(text);
-            buttonSubmit.setId(ID);
-            buttonSubmit.setOnClickListener(this);
-        }
-
-
-        public void onClick(View v){
-            switch (v.getId()){
-                case SUBMIT_ID:
-                    countScore(v);
-                    break;
-            }
+    public void checkScore(View v){
+        for(Question question:quizData){
+            for (String input : question.user_input)
+                wtf("checkScore", input);
         }
     }
 
-    private void countScore(View v){
-
-    }
+//    private void countScore(){
+//        int score = 0;
+//        int maxQuestions = questionsLL.getChildCount();
+//        View question=null;
+//        EditText answerText= null;
+//        CheckBox[] answersCheckbox = null;
+//        RadioButton[] answerRadio = null;
+//
+//        for (int i = 0; i<maxQuestions; ++i) {
+//            question = questionsLL.getChildAt(i);
+//            switch (question.getId()) {
+//                case R.id.layout_text_entry:
+//                    answerText = (EditText) question.findViewById(R.id.answer);
+//                    wtf("Count Score Text", answerText.getText().toString());
+//                    break;
+//                case R.id.layout_checkbox:
+//                    answersCheckbox = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
+//                    for (int ans = 0; ans < NUMBER_OF_MULTIPLE_ANSWERS; ++ans) {
+//                        answersCheckbox[ans] = (CheckBox) question.findViewById(ans);
+//                        wtf("Count Score Multiple", answersCheckbox[ans].toString());
+//                    }
+//                    break;
+//                case R.id.layout_radio:
+//                    answerRadio = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
+//                    for (int ans = 0; ans < NUMBER_OF_MULTIPLE_ANSWERS; ++ans) {
+//                        answerRadio[ans] = (RadioButton) question.findViewById(ans);
+//                        wtf("Count Score Single", answerRadio[ans].toString());
+//                    }
+//                    break;
+//                default:
+//                    wtf("Count Score", "went past questions?");
+//                    break;
+//            }
+//        }
+//    }
 
     private List parseFile(String in) {
         List out = new ArrayList();
@@ -273,12 +237,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public final class Question {
+    public final class Question implements View.OnClickListener{
         public final Kana data;
         public final String question;
         public final QuestionType questionType;
         public final Vector<String> answers;
         public final KanaType answer_type;
+        public ArrayList<String> user_input = new ArrayList<>();
 
         Question(Kana data, String question, QuestionType type) {
             //free question Constructor
@@ -305,6 +270,72 @@ public class MainActivity extends AppCompatActivity {
             this.answers = answers;
             this.answer_type = answer_type;
         }
+        public void onClick(View v) {
+            EditText inputText=null;
+            CheckBox inputCheckBox=null;
+            RadioButton inputRadio=null;
+
+            switch(questionType){
+                case FREE:
+                    inputText = (EditText) v;
+                    user_input.add(inputText.getText().toString());
+                    break;
+                case MULTIPLE:
+                    inputCheckBox = (CheckBox) v;
+                    user_input.add(inputCheckBox.getText().toString());
+                    break;
+                case SINGLE:
+                    inputRadio = (RadioButton) v;
+                    user_input.add(inputRadio.getText().toString());
+            }
+        }
+    }
+private View generateQuestionView (Question question, int questionNumber){
+        View layout=null;
+        TextView questionString;
+    EditText answerText=null;
+        CheckBox[] answersCheckbox = null;
+        RadioButton[] answerRadio = null;
+        switch (question.questionType) {
+            case FREE:
+                layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
+                questionString = (TextView) layout.findViewById(R.id.questionText);
+                questionString.setText("(" + questionNumber + ") " + question.question);
+                answerText = (EditText) layout.findViewById(R.id.answer);
+                answerText.setOnClickListener(question);
+                break;
+            case MULTIPLE:
+                layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
+                questionString = (TextView) layout.findViewById(R.id.questionCheckbox);
+                questionString.setText("(" + questionNumber + ") " + question.question);
+                answersCheckbox = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
+                answersCheckbox[0] = (CheckBox) layout.findViewById(R.id.answer1);
+                answersCheckbox[1] = (CheckBox) layout.findViewById(R.id.answer2);
+                answersCheckbox[2] = (CheckBox) layout.findViewById(R.id.answer3);
+                answersCheckbox[3] = (CheckBox) layout.findViewById(R.id.answer4);
+                for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
+                    answersCheckbox[i].setText(question.answers.get(i));
+                    answersCheckbox[i].setOnClickListener(question);
+                }
+                break;
+
+            case SINGLE:
+                layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
+                questionString = (TextView) layout.findViewById(R.id.questionRadio);
+                questionString.setText("(" + (questionNumber + 1) + ") " + question.question);
+                answerRadio = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
+                answerRadio[0] = (RadioButton) layout.findViewById(R.id.answer1);
+                answerRadio[1] = (RadioButton) layout.findViewById(R.id.answer2);
+                answerRadio[2] = (RadioButton) layout.findViewById(R.id.answer3);
+                answerRadio[3] = (RadioButton) layout.findViewById(R.id.answer4);
+                //wonder if there's a way around it...
+                for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
+                    answerRadio[i].setText(question.answers.get(i));
+                    answerRadio[i].setOnClickListener(question);
+                }
+                break;
+        }
+        return layout;
     }
 }
 

@@ -6,11 +6,10 @@
               android:orientation="vertical">
 
     <TextView
-        android:id="@+id/question_field"
+        android:id="@+id/questionCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="QUESTION"
-        android:tag="question_type"/>
+        android:text="QUESTION"/>
 
     <LinearLayout
         android:layout_width="match_parent"
