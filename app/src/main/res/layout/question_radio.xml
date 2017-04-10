@@ -6,46 +6,24 @@
               android:orientation="vertical">
 
     <TextView
-        android:id="@+id/questionRadio"
+        android:id="@+id/question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="QUESTION"/>
 
     <LinearLayout
+        android:id="@+id/answers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/answer1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="25"
-            android:gravity="center"
-            android:text="ANSWER1"/>
-
+            style="@style/answer"/>
         <RadioButton
-            android:id="@+id/answer2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="25"
-            android:gravity="center"
-            android:text="ANSWER2"/>
-
+            style="@style/answer"/>
         <RadioButton
-            android:id="@+id/answer3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="25"
-            android:gravity="center"
-            android:text="answer3"/>
-
+            style="@style/answer"/>
         <RadioButton
-            android:id="@+id/answer4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="25"
-            android:gravity="center"
-            android:text="ANSWER4"/>
+            style="@style/answer"/>
     </LinearLayout>
 </LinearLayout>

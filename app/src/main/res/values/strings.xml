@@ -2,4 +2,5 @@
     <string name="app_name">Quiz App</string>
     <string name="score_correct">Correct: </string>
     <string name="score_wrong">Wrong: </string>
+    <string name="button_submit">Submit</string>
 </resources>

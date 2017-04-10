@@ -7,15 +7,15 @@
     android:orientation="horizontal">
 
     <TextView
-        style="@style/Score"
+        style="@style/score"
         android:text="@string/score_correct"/>
 
     <TextView
-        style="@style/Score"
+        style="@style/score"
         android:text="@string/score_wrong"/>
 
     <Button
         android:id="@+id/BTNsubmit"
         android:onClick="checkScore"
-        style="@style/Button"/>
+        style="@style/button"/>
 </LinearLayout>

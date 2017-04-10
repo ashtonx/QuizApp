@@ -8,16 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Score">
+    <style name="score">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">4</item>
     </style>
 
-    <style name="Button">
+    <style name="button">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="answer">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">@integer/answers_weight</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

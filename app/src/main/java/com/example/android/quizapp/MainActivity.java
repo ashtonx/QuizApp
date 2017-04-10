@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     List<Question> quizData = new ArrayList<>();
 
     public enum QuestionType {FREE, MULTIPLE, SINGLE}
+
     public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
 
     final int SUBMIT_ID = 42;
@@ -79,54 +80,18 @@ public class MainActivity extends AppCompatActivity {
     public void displayQuestions(List<Question> quizData) {
         ArrayList<View> questions = new ArrayList<>();
         for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
-            questionsLL.addView(generateQuestionView(quizData.get(questionNumber),questionNumber));
+            questionsLL.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
         }
-        View score= getLayoutInflater().inflate(R.layout.score, layoutScore, false);
+        View score = getLayoutInflater().inflate(R.layout.score, layoutScore, false);
         questionsLL.addView(score);
     }
 
-    public void checkScore(View v){
-        for(Question question:quizData){
+    public void checkScore(View v) {
+        for (Question question : quizData) {
             for (String input : question.user_input)
                 wtf("checkScore", input);
         }
     }
-
-//    private void countScore(){
-//        int score = 0;
-//        int maxQuestions = questionsLL.getChildCount();
-//        View question=null;
-//        EditText answerText= null;
-//        CheckBox[] answersCheckbox = null;
-//        RadioButton[] answerRadio = null;
-//
-//        for (int i = 0; i<maxQuestions; ++i) {
-//            question = questionsLL.getChildAt(i);
-//            switch (question.getId()) {
-//                case R.id.layout_text_entry:
-//                    answerText = (EditText) question.findViewById(R.id.answer);
-//                    wtf("Count Score Text", answerText.getText().toString());
-//                    break;
-//                case R.id.layout_checkbox:
-//                    answersCheckbox = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
-//                    for (int ans = 0; ans < NUMBER_OF_MULTIPLE_ANSWERS; ++ans) {
-//                        answersCheckbox[ans] = (CheckBox) question.findViewById(ans);
-//                        wtf("Count Score Multiple", answersCheckbox[ans].toString());
-//                    }
-//                    break;
-//                case R.id.layout_radio:
-//                    answerRadio = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
-//                    for (int ans = 0; ans < NUMBER_OF_MULTIPLE_ANSWERS; ++ans) {
-//                        answerRadio[ans] = (RadioButton) question.findViewById(ans);
-//                        wtf("Count Score Single", answerRadio[ans].toString());
-//                    }
-//                    break;
-//                default:
-//                    wtf("Count Score", "went past questions?");
-//                    break;
-//            }
-//        }
-//    }
 
     private List parseFile(String in) {
         List out = new ArrayList();
@@ -145,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public List generateQuiz(List<Kana> in, int numberOfQuestions, int numberOfAnswers) {
-        List <Question> out = new ArrayList<>(numberOfQuestions);
+        List<Question> out = new ArrayList<>(numberOfQuestions);
         Collections.shuffle(in);
         QuestionType tmp_type;
         for (int i = 0; i < numberOfQuestions; ++i) {
@@ -228,16 +193,19 @@ public class MainActivity extends AppCompatActivity {
     private void getRandomKana(List<Kana> in, Vector<String> answers, int numberOfAnswers) {
         Boolean hiragana;
         while (answers.size() < numberOfAnswers) {
+            String tmp=null;
             hiragana = rand.nextBoolean();
             if (hiragana) {
-                answers.add(in.get(rand.nextInt(in.size())).hiragana);
+                while (tmp==null || answers.contains(tmp)) tmp=in.get(rand.nextInt(in.size())).hiragana;
+                answers.add(tmp);
             } else {
-                answers.add(in.get(rand.nextInt(in.size())).katakana);
+                while (tmp==null || answers.contains(tmp)) tmp=in.get(rand.nextInt(in.size())).katakana;
+                answers.add(tmp);
             }
         }
     }
 
-    public final class Question implements View.OnClickListener{
+    public final class Question implements View.OnClickListener {
         public final Kana data;
         public final String question;
         public final QuestionType questionType;
@@ -270,12 +238,13 @@ public class MainActivity extends AppCompatActivity {
             this.answers = answers;
             this.answer_type = answer_type;
         }
-        public void onClick(View v) {
-            EditText inputText=null;
-            CheckBox inputCheckBox=null;
-            RadioButton inputRadio=null;
 
-            switch(questionType){
+        public void onClick(View v) {
+            EditText inputText = null;
+            CheckBox inputCheckBox = null;
+            RadioButton inputRadio = null;
+
+            switch (questionType) {
                 case FREE:
                     inputText = (EditText) v;
                     user_input.add(inputText.getText().toString());
@@ -290,48 +259,41 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-private View generateQuestionView (Question question, int questionNumber){
-        View layout=null;
+
+    private View generateQuestionView(Question question, int questionNumber) {
+        View layout = null;
         TextView questionString;
-    EditText answerText=null;
-        CheckBox[] answersCheckbox = null;
-        RadioButton[] answerRadio = null;
+        LinearLayout answers = null;
         switch (question.questionType) {
             case FREE:
                 layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
-                questionString = (TextView) layout.findViewById(R.id.questionText);
+                questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + questionNumber + ") " + question.question);
-                answerText = (EditText) layout.findViewById(R.id.answer);
+                EditText answerText = (EditText) layout.findViewById(R.id.answer);
                 answerText.setOnClickListener(question);
                 break;
             case MULTIPLE:
                 layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
-                questionString = (TextView) layout.findViewById(R.id.questionCheckbox);
+                questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + questionNumber + ") " + question.question);
-                answersCheckbox = new CheckBox[NUMBER_OF_MULTIPLE_ANSWERS];
-                answersCheckbox[0] = (CheckBox) layout.findViewById(R.id.answer1);
-                answersCheckbox[1] = (CheckBox) layout.findViewById(R.id.answer2);
-                answersCheckbox[2] = (CheckBox) layout.findViewById(R.id.answer3);
-                answersCheckbox[3] = (CheckBox) layout.findViewById(R.id.answer4);
-                for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
-                    answersCheckbox[i].setText(question.answers.get(i));
-                    answersCheckbox[i].setOnClickListener(question);
+                answers = (LinearLayout) layout.findViewById(R.id.answers);
+                CheckBox answerCheckbox;
+                for (int i = 0; i < answers.getChildCount(); ++i) {
+                    answerCheckbox = (CheckBox) answers.getChildAt(i);
+                    answerCheckbox.setText(question.answers.get(i));
+                    answerCheckbox.setOnClickListener(question);
                 }
                 break;
-
             case SINGLE:
                 layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
-                questionString = (TextView) layout.findViewById(R.id.questionRadio);
+                questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + (questionNumber + 1) + ") " + question.question);
-                answerRadio = new RadioButton[NUMBER_OF_MULTIPLE_ANSWERS];
-                answerRadio[0] = (RadioButton) layout.findViewById(R.id.answer1);
-                answerRadio[1] = (RadioButton) layout.findViewById(R.id.answer2);
-                answerRadio[2] = (RadioButton) layout.findViewById(R.id.answer3);
-                answerRadio[3] = (RadioButton) layout.findViewById(R.id.answer4);
-                //wonder if there's a way around it...
-                for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
-                    answerRadio[i].setText(question.answers.get(i));
-                    answerRadio[i].setOnClickListener(question);
+                answers = (LinearLayout) layout.findViewById(R.id.answers);
+                RadioButton answerRadio;
+                for (int i = 0; i < answers.getChildCount(); ++i) {
+                    answerRadio = (RadioButton) answers.getChildAt(i);
+                    answerRadio.setText(question.answers.get(i));
+                    answerRadio.setOnClickListener(question);
                 }
                 break;
         }
@@ -339,10 +301,6 @@ private View generateQuestionView (Question question, int questionNumber){
     }
 }
 
-
-//TODO Get Answer
-// view input, get answer(s).
-//get answer to a question, send it for checks.
 //TODO Check Answer
 //compare answer(s) with questions ? find, compare.
 //verify answer and send it to progress register
