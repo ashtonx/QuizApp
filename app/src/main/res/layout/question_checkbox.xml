@@ -4,22 +4,24 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="vertical">
+
     <TextView
         android:id="@+id/question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="QUESTION"/>
+        style="@style/question_field"/>
+
     <LinearLayout
         android:id="@+id/answers"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        style="@style/answers_linear_layout">
+
         <CheckBox
             style="@style/answer"/>
+
         <CheckBox
             style="@style/answer"/>
+
         <CheckBox
             style="@style/answer"/>
+
         <CheckBox
             style="@style/answer"/>
     </LinearLayout>
