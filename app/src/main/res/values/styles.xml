@@ -6,24 +6,39 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowSoftInputMode">stateHidden</item>
     </style>
 
-    <style name="score">
+    <style name="default_margins">
+        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:layout_marginBottom">@dimen/margin</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+    </style>
+
+    <style name="score" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">4</item>
     </style>
 
-    <style name="button">
+    <style name="button" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_gravity">center</item>
     </style>
 
-    <style name="answer">
+    <style name="answer" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">@integer/answers_weight</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="content" parent="default_margins">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
 </resources>

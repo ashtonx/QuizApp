@@ -1,5 +1,7 @@
 package com.example.android.quizapp;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,7 +22,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
-import static android.util.Log.wtf;
 import static com.example.android.quizapp.MainActivity.KanaType.HIRAGANA;
 import static com.example.android.quizapp.MainActivity.KanaType.KATAKANA;
 import static com.example.android.quizapp.MainActivity.KanaType.ROMAJI;
@@ -41,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private final String FILE_NAME = "kana.xml";
     private final int NUMBER_OF_QUESTIONS = 10;
     private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
+    private final String RETAINED_QUIZ_TAG="quizData";
     List<Question> quizData = new ArrayList<>();
+    private RetainedFragment<List<Question>> dataFragment;
 
     public enum QuestionType {FREE, MULTIPLE, SINGLE}
 
@@ -52,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout layoutRadio;
     LinearLayout layoutText;
     LinearLayout layoutScore;
-    LinearLayout questionsLL;
+    LinearLayout mainContent;
 
     List<Kana> parsedData = null;
     Random rand = new Random();
-
+    boolean started=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,32 +68,82 @@ public class MainActivity extends AppCompatActivity {
         layoutRadio = (LinearLayout) findViewById(R.id.layout_radio);
         layoutText = (LinearLayout) findViewById(R.id.layout_text_entry);
         layoutScore = (LinearLayout) findViewById(R.id.layout_score);
-        questionsLL = (LinearLayout) findViewById(R.id.questions);
-        start();
-    }
+        mainContent = (LinearLayout) findViewById(R.id.content);
 
-    public void start() {
-        parsedData = parseFile(FILE_NAME);
-        quizData = generateQuiz(parsedData, NUMBER_OF_QUESTIONS,
-                NUMBER_OF_MULTIPLE_ANSWERS);
-        parsedData.clear();
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (RetainedFragment<List<Question>>) fm.findFragmentByTag(RETAINED_QUIZ_TAG);
+        if (dataFragment==null){
+            dataFragment = new RetainedFragment<>();
+            fm.beginTransaction().add(dataFragment, RETAINED_QUIZ_TAG).commit();
+            parsedData = (List<Kana>) parseFile(FILE_NAME);
+            quizData = (List<Question>) generateQuiz(parsedData, NUMBER_OF_QUESTIONS,
+                    NUMBER_OF_MULTIPLE_ANSWERS);
+            parsedData.clear();
+            dataFragment.setData(quizData);
+        }
+        quizData = dataFragment.getData();
         displayQuestions(quizData);
     }
 
     public void displayQuestions(List<Question> quizData) {
         ArrayList<View> questions = new ArrayList<>();
         for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
-            questionsLL.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
+            mainContent.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
         }
         View score = getLayoutInflater().inflate(R.layout.score, layoutScore, false);
-        questionsLL.addView(score);
+        mainContent.addView(score);
     }
 
     public void checkScore(View v) {
+        int correct=0;
+        int wrong=0;
         for (Question question : quizData) {
-            for (String input : question.user_input)
-                wtf("checkScore", input);
-        }
+                switch (question.questionType){
+                    case FREE:
+                        if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
+                        else ++wrong;
+                        break;
+                    case MULTIPLE:
+                        int checkboxCorrect=0;
+                        int countTrue =0;
+                        for (int i =0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i) {
+                            if (question.checked_answers[i]) {
+                                countTrue++;
+                                String tmp_answer = question.answers.get(i);
+                                if (tmp_answer.equalsIgnoreCase(question.data.katakana) ||
+                                tmp_answer.equalsIgnoreCase(question.data.hiragana))
+                                    ++checkboxCorrect;
+                            }
+                        }
+                        if (countTrue==2&&checkboxCorrect==2) ++correct;
+                        else ++wrong;
+                        break;
+                    case SINGLE:
+                        switch(question.answer_type){
+                            case HIRAGANA:
+                                if (question.user_input.equalsIgnoreCase(question.data.hiragana)) ++correct;
+                                else ++wrong;
+                                break;
+                            case KATAKANA:
+                                if (question.user_input.equalsIgnoreCase(question.data.katakana)) ++correct;
+                                else ++wrong;
+                                break;
+                            case ROMAJI:
+                                if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
+                                else ++wrong;
+                                break;
+                        }
+                        break;
+                }
+            }
+        displayScore(correct,wrong);
+    }
+
+    private void displayScore(int pointsCorrect, int pointsWrong){
+        TextView correctTV = (TextView) findViewById(R.id.scoreCorrect);
+        TextView wrongTV = (TextView) findViewById(R.id.scoreWrong);
+        correctTV.setText(getString(R.string.score_correct)+String.valueOf(pointsCorrect));
+        wrongTV.setText(getString(R.string.score_wrong)+String.valueOf(pointsWrong));
     }
 
     private List parseFile(String in) {
@@ -101,10 +154,10 @@ public class MainActivity extends AppCompatActivity {
             is = getAssets().open(in);
             out = parser.parse(is);
             is.close();
-        } catch (IOException e) {
-            Log.e("getData", e.getMessage());
-        } catch (XmlPullParserException e) {
-            Log.e("getData", e.getMessage());
+        } catch (IOException io) {
+            Log.e("getData", io.getMessage());
+        } catch (XmlPullParserException xml) {
+            Log.e("getData", xml.getMessage());
         }
         return out;
     }
@@ -211,7 +264,10 @@ public class MainActivity extends AppCompatActivity {
         public final QuestionType questionType;
         public final Vector<String> answers;
         public final KanaType answer_type;
-        public ArrayList<String> user_input = new ArrayList<>();
+        public String user_input="wrong";
+        public boolean[] checked_answers = new boolean[NUMBER_OF_MULTIPLE_ANSWERS];
+
+        public double correct=0;
 
         Question(Kana data, String question, QuestionType type) {
             //free question Constructor
@@ -228,6 +284,9 @@ public class MainActivity extends AppCompatActivity {
             this.questionType = questionType;
             this.answers = answers;
             this.answer_type = null;
+            for (int i =0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i ){
+                checked_answers[i]=false;
+            }
         }
 
         Question(Kana data, String question, QuestionType questionType, Vector<String> answers,
@@ -247,15 +306,17 @@ public class MainActivity extends AppCompatActivity {
             switch (questionType) {
                 case FREE:
                     inputText = (EditText) v;
-                    user_input.add(inputText.getText().toString());
+                    user_input=inputText.getText().toString();
                     break;
                 case MULTIPLE:
                     inputCheckBox = (CheckBox) v;
-                    user_input.add(inputCheckBox.getText().toString());
+                    inputCheckBox.isChecked();
+                    int pos= answers.indexOf(inputCheckBox.getText().toString());
+                    checked_answers[pos]= (inputCheckBox.isChecked()) ? true:false;
                     break;
                 case SINGLE:
                     inputRadio = (RadioButton) v;
-                    user_input.add(inputRadio.getText().toString());
+                    user_input=inputRadio.getText().toString();
             }
         }
     }
@@ -281,7 +342,9 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < answers.getChildCount(); ++i) {
                     answerCheckbox = (CheckBox) answers.getChildAt(i);
                     answerCheckbox.setText(question.answers.get(i));
+                    answerCheckbox.setId(i);
                     answerCheckbox.setOnClickListener(question);
+                    if (question.user_input.equalsIgnoreCase(question.answers.get(i))) answerCheckbox.setChecked(true);//retain answers
                 }
                 break;
             case SINGLE:
@@ -293,24 +356,34 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < answers.getChildCount(); ++i) {
                     answerRadio = (RadioButton) answers.getChildAt(i);
                     answerRadio.setText(question.answers.get(i));
+                    answerRadio.setId(i);
                     answerRadio.setOnClickListener(question);
+                    if(question.checked_answers[i]) answerRadio.setChecked(true); //retain answers
                 }
                 break;
         }
         return layout;
     }
+
+    public static class RetainedFragment<T> extends Fragment {
+        public T data;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //retain this fragment
+            setRetainInstance(true);
+        }
+
+        public void setData(T data){
+            this.data = data;
+        }
+
+        public T getData(){
+            return data;
+        }
+    }
 }
 
-//TODO Check Answer
-//compare answer(s) with questions ? find, compare.
-//verify answer and send it to progress register
-//TODO Register Progress
-//Register which question it was
-//Register wether it was correct or not.
-//potentially register answer wether it was good or bad...
-//TODO Check Progress
-//check if done, if not generateQuiz new question if it's ok display Finished.
-//TODO Finished
-// Display Results, option to reset.
 //TODO Clean and polish
 //TODO Settings ?

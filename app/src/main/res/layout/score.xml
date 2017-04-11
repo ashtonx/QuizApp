@@ -8,10 +8,12 @@
 
     <TextView
         style="@style/score"
+        android:id="@+id/scoreCorrect"
         android:text="@string/score_correct"/>
 
     <TextView
         style="@style/score"
+        android:id="@+id/scoreWrong"
         android:text="@string/score_wrong"/>
 
     <Button

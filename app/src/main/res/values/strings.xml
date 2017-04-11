@@ -3,4 +3,5 @@
     <string name="score_correct">Correct: </string>
     <string name="score_wrong">Wrong: </string>
     <string name="button_submit">Submit</string>
+    <string name="edit_text_hint_answer">Answer</string>
 </resources>
