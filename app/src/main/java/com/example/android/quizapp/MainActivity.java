@@ -46,15 +46,18 @@ public class MainActivity extends AppCompatActivity {
     private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
     private final String RETAINED_QUIZ_TAG = "quizData";
     List<Question> quizData = new ArrayList<>();
+    List<Kana> parsedData = null;
+    private RetainedFragment<List<Question>> dataFragment;
+
+    Random rand = new Random();
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
     LinearLayout layoutScore;
     LinearLayout mainContent;
-    List<Kana> parsedData = null;
-    Random rand = new Random();
-    boolean started = false;
-    private RetainedFragment<List<Question>> dataFragment;
+
+    public enum QuestionType {FREE, MULTIPLE, SINGLE}
+    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,15 +82,6 @@ public class MainActivity extends AppCompatActivity {
         }
         quizData = dataFragment.getData();
         displayQuestions(quizData);
-    }
-
-    public void displayQuestions(List<Question> quizData) {
-        ArrayList<View> questions = new ArrayList<>();
-        for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
-            mainContent.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
-        }
-        View score = getLayoutInflater().inflate(R.layout.score, layoutScore, false);
-        mainContent.addView(score);
     }
 
     public void checkScore(View v) {
@@ -136,6 +130,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         displayScore(correct, wrong);
+    }
+
+    public void displayQuestions(List<Question> quizData) {
+        ArrayList<View> questions = new ArrayList<>();
+        for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
+            mainContent.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
+        }
+        View score = getLayoutInflater().inflate(R.layout.score, layoutScore, false);
+        mainContent.addView(score);
     }
 
     private void displayScore(int pointsCorrect, int pointsWrong) {
@@ -302,10 +305,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return layout;
     }
-
-    public enum QuestionType {FREE, MULTIPLE, SINGLE}
-
-    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
 
     public static class RetainedFragment<T> extends Fragment {
         public T data;
