@@ -29,6 +29,7 @@ import static com.example.android.quizapp.MainActivity.KanaType.ROMAJI;
 import static com.example.android.quizapp.MainActivity.QuestionType.FREE;
 import static com.example.android.quizapp.MainActivity.QuestionType.MULTIPLE;
 import static com.example.android.quizapp.MainActivity.QuestionType.SINGLE;
+import static com.example.android.quizapp.R.id.answers;
 
 
 //4-10 questions
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         Kana data = in.get(iter);
         String questionString;
         String questionCharacter;
-        Vector<String> answers = null;
+        Vector<String> answers;
         KanaType answerType;
         Question out = null;
         switch (questionType) {
@@ -266,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
                 layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
                 questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + questionNumber + ") " + question.question);
-                LinearLayout answersLL = (LinearLayout) layout.findViewById(R.id.answers);
+                LinearLayout answersLL = (LinearLayout) layout.findViewById(answers);
                 CheckBox answerCheckbox;
                 for (int i = 0; i < answersLL.getChildCount(); ++i) {
                     answerCheckbox = (CheckBox) answersLL.getChildAt(i);
@@ -281,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
                 questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + (questionNumber + 1) + ") " + question.question);
-                RadioGroup answersRG = (RadioGroup) layout.findViewById(R.id.answers);
+                RadioGroup answersRG = (RadioGroup) layout.findViewById(answers);
                 RadioButton answerRadio;
                 for (int i = 0; i < answersRG.getChildCount(); ++i) {
                     answerRadio = (RadioButton) answersRG.getChildAt(i);
@@ -327,8 +328,6 @@ public class MainActivity extends AppCompatActivity {
         public String user_input = "wrong";
         public boolean[] checked_answers = new boolean[NUMBER_OF_MULTIPLE_ANSWERS];
 
-        public double correct = 0;
-
         Question(Kana data, String question, QuestionType type) {
             //free question Constructor
             this.data = data;
@@ -360,18 +359,15 @@ public class MainActivity extends AppCompatActivity {
 
         public void onClick(View v) {
             EditText inputText = null;
-            CheckBox inputCheckBox = null;
-            RadioButton inputRadio = null;
-
             switch (questionType) {
                 case MULTIPLE:
-                    inputCheckBox = (CheckBox) v;
+                    CheckBox inputCheckBox = (CheckBox) v;
                     inputCheckBox.isChecked();
                     int pos = answers.indexOf(inputCheckBox.getText().toString());
-                    checked_answers[pos] = (inputCheckBox.isChecked()) ? true : false;
+                    checked_answers[pos] = (inputCheckBox.isChecked());
                     break;
                 case SINGLE:
-                    inputRadio = (RadioButton) v;
+                    RadioButton inputRadio = (RadioButton) v;
                     user_input = inputRadio.getText().toString();
             }
         }
