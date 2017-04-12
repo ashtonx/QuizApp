@@ -39,12 +39,12 @@ import static com.example.android.quizapp.MainActivity.QuestionType.SINGLE;
 // submit score.
 
 public class MainActivity extends AppCompatActivity {
-    final int SUBMIT_ID = 42;
-    //GLOBAL Types
+    //Settings
     private final String FILE_NAME = "kana.xml";
     private final int NUMBER_OF_QUESTIONS = 10;
     private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
     private final String RETAINED_QUIZ_TAG = "quizData";
+    //GLOBAL Types
     List<Question> quizData = new ArrayList<>();
     List<Kana> parsedData = null;
     private RetainedFragment<List<Question>> dataFragment;
@@ -86,12 +86,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void checkScore(View v) {
         int correct = 0;
-        int wrong = 0;
         for (Question question : quizData) {
             switch (question.questionType) {
                 case FREE:
                     if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
-                    else ++wrong;
                     break;
                 case MULTIPLE:
                     int checkboxCorrect = 0;
@@ -106,30 +104,26 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     if (countTrue == 2 && checkboxCorrect == 2) ++correct;
-                    else ++wrong;
                     break;
                 case SINGLE:
                     switch (question.answer_type) {
                         case HIRAGANA:
                             if (question.user_input.equalsIgnoreCase(question.data.hiragana))
                                 ++correct;
-                            else ++wrong;
                             break;
                         case KATAKANA:
                             if (question.user_input.equalsIgnoreCase(question.data.katakana))
                                 ++correct;
-                            else ++wrong;
                             break;
                         case ROMAJI:
                             if (question.user_input.equalsIgnoreCase(question.data.romaji))
                                 ++correct;
-                            else ++wrong;
                             break;
                     }
                     break;
             }
         }
-        displayScore(correct, wrong);
+        displayScore(correct, quizData.size());
     }
 
     public void displayQuestions(List<Question> quizData) {
@@ -141,11 +135,9 @@ public class MainActivity extends AppCompatActivity {
         mainContent.addView(score);
     }
 
-    private void displayScore(int pointsCorrect, int pointsWrong) {
-        TextView correctTV = (TextView) findViewById(R.id.scoreCorrect);
-        TextView wrongTV = (TextView) findViewById(R.id.scoreWrong);
-        correctTV.setText(getString(R.string.score_correct) + String.valueOf(pointsCorrect));
-        wrongTV.setText(getString(R.string.score_wrong) + String.valueOf(pointsWrong));
+    private void displayScore(int pointsCorrect, int maxPoints) {
+        TextView resultTV = (TextView) findViewById(R.id.scoreResult);
+        resultTV.setText(getString(R.string.score_correct) + String.valueOf(pointsCorrect)+" / "+String.valueOf(maxPoints));
     }
 
     private List parseFile(String in) {
@@ -390,7 +382,15 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    public final class Settings{
+        private final int NUMBER_OF_QUESTIONS = 10;
+        private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
+        private final String RETAINED_QUIZ_TAG = "quizData";
+        List<Question> quizData = new ArrayList<>();
+        List<Kana> parsedData = null;
+        private RetainedFragment<List<Question>> dataFragment;
+    }
 }
 
-//TODO Clean and polish
 //TODO Settings ?
