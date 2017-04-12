@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayQuestions(List<Question> quizData) {
-        ArrayList<View> questions = new ArrayList<>();
         for (int questionNumber = 0; questionNumber < quizData.size(); ++questionNumber) {
             mainContent.addView(generateQuestionView(quizData.get(questionNumber), questionNumber));
         }
@@ -358,7 +357,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void onClick(View v) {
-            EditText inputText = null;
             switch (questionType) {
                 case MULTIPLE:
                     CheckBox inputCheckBox = (CheckBox) v;
