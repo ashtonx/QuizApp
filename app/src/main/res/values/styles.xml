@@ -33,17 +33,17 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="answers_linear_layout">
+    <style name="answer_list">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">left</item>
     </style>
 
     <style name="answer" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">@integer/answers_weight</item>
-        <item name="android:gravity">center</item>
     </style>
 
     <style name="content" parent="default_margins">

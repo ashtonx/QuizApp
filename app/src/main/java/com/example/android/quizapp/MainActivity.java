@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -38,28 +39,23 @@ import static com.example.android.quizapp.MainActivity.QuestionType.SINGLE;
 // submit score.
 
 public class MainActivity extends AppCompatActivity {
+    final int SUBMIT_ID = 42;
     //GLOBAL Types
     private final String FILE_NAME = "kana.xml";
     private final int NUMBER_OF_QUESTIONS = 10;
     private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
-    private final String RETAINED_QUIZ_TAG="quizData";
+    private final String RETAINED_QUIZ_TAG = "quizData";
     List<Question> quizData = new ArrayList<>();
-    private RetainedFragment<List<Question>> dataFragment;
-
-    public enum QuestionType {FREE, MULTIPLE, SINGLE}
-
-    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
-
-    final int SUBMIT_ID = 42;
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
     LinearLayout layoutScore;
     LinearLayout mainContent;
-
     List<Kana> parsedData = null;
     Random rand = new Random();
-    boolean started=false;
+    boolean started = false;
+    private RetainedFragment<List<Question>> dataFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fm = getFragmentManager();
         dataFragment = (RetainedFragment<List<Question>>) fm.findFragmentByTag(RETAINED_QUIZ_TAG);
-        if (dataFragment==null){
+        if (dataFragment == null) {
             dataFragment = new RetainedFragment<>();
             fm.beginTransaction().add(dataFragment, RETAINED_QUIZ_TAG).commit();
             parsedData = (List<Kana>) parseFile(FILE_NAME);
@@ -95,55 +91,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkScore(View v) {
-        int correct=0;
-        int wrong=0;
+        int correct = 0;
+        int wrong = 0;
         for (Question question : quizData) {
-                switch (question.questionType){
-                    case FREE:
-                        if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
-                        else ++wrong;
-                        break;
-                    case MULTIPLE:
-                        int checkboxCorrect=0;
-                        int countTrue =0;
-                        for (int i =0; i<NUMBER_OF_MULTIPLE_ANSWERS;++i) {
-                            if (question.checked_answers[i]) {
-                                countTrue++;
-                                String tmp_answer = question.answers.get(i);
-                                if (tmp_answer.equalsIgnoreCase(question.data.katakana) ||
-                                tmp_answer.equalsIgnoreCase(question.data.hiragana))
-                                    ++checkboxCorrect;
-                            }
+            switch (question.questionType) {
+                case FREE:
+                    if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
+                    else ++wrong;
+                    break;
+                case MULTIPLE:
+                    int checkboxCorrect = 0;
+                    int countTrue = 0;
+                    for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
+                        if (question.checked_answers[i]) {
+                            countTrue++;
+                            String tmp_answer = question.answers.get(i);
+                            if (tmp_answer.equalsIgnoreCase(question.data.katakana) ||
+                                    tmp_answer.equalsIgnoreCase(question.data.hiragana))
+                                ++checkboxCorrect;
                         }
-                        if (countTrue==2&&checkboxCorrect==2) ++correct;
-                        else ++wrong;
-                        break;
-                    case SINGLE:
-                        switch(question.answer_type){
-                            case HIRAGANA:
-                                if (question.user_input.equalsIgnoreCase(question.data.hiragana)) ++correct;
-                                else ++wrong;
-                                break;
-                            case KATAKANA:
-                                if (question.user_input.equalsIgnoreCase(question.data.katakana)) ++correct;
-                                else ++wrong;
-                                break;
-                            case ROMAJI:
-                                if (question.user_input.equalsIgnoreCase(question.data.romaji)) ++correct;
-                                else ++wrong;
-                                break;
-                        }
-                        break;
-                }
+                    }
+                    if (countTrue == 2 && checkboxCorrect == 2) ++correct;
+                    else ++wrong;
+                    break;
+                case SINGLE:
+                    switch (question.answer_type) {
+                        case HIRAGANA:
+                            if (question.user_input.equalsIgnoreCase(question.data.hiragana))
+                                ++correct;
+                            else ++wrong;
+                            break;
+                        case KATAKANA:
+                            if (question.user_input.equalsIgnoreCase(question.data.katakana))
+                                ++correct;
+                            else ++wrong;
+                            break;
+                        case ROMAJI:
+                            if (question.user_input.equalsIgnoreCase(question.data.romaji))
+                                ++correct;
+                            else ++wrong;
+                            break;
+                    }
+                    break;
             }
-        displayScore(correct,wrong);
+        }
+        displayScore(correct, wrong);
     }
 
-    private void displayScore(int pointsCorrect, int pointsWrong){
+    private void displayScore(int pointsCorrect, int pointsWrong) {
         TextView correctTV = (TextView) findViewById(R.id.scoreCorrect);
         TextView wrongTV = (TextView) findViewById(R.id.scoreWrong);
-        correctTV.setText(getString(R.string.score_correct)+String.valueOf(pointsCorrect));
-        wrongTV.setText(getString(R.string.score_wrong)+String.valueOf(pointsWrong));
+        correctTV.setText(getString(R.string.score_correct) + String.valueOf(pointsCorrect));
+        wrongTV.setText(getString(R.string.score_wrong) + String.valueOf(pointsWrong));
     }
 
     private List parseFile(String in) {
@@ -246,28 +245,97 @@ public class MainActivity extends AppCompatActivity {
     private void getRandomKana(List<Kana> in, Vector<String> answers, int numberOfAnswers) {
         Boolean hiragana;
         while (answers.size() < numberOfAnswers) {
-            String tmp=null;
+            String tmp = null;
             hiragana = rand.nextBoolean();
             if (hiragana) {
-                while (tmp==null || answers.contains(tmp)) tmp=in.get(rand.nextInt(in.size())).hiragana;
+                while (tmp == null || answers.contains(tmp))
+                    tmp = in.get(rand.nextInt(in.size())).hiragana;
                 answers.add(tmp);
             } else {
-                while (tmp==null || answers.contains(tmp)) tmp=in.get(rand.nextInt(in.size())).katakana;
+                while (tmp == null || answers.contains(tmp))
+                    tmp = in.get(rand.nextInt(in.size())).katakana;
                 answers.add(tmp);
             }
         }
     }
 
-    public final class Question implements View.OnClickListener {
+    private View generateQuestionView(Question question, int questionNumber) {
+        View layout = null;
+        TextView questionString;
+        switch (question.questionType) {
+            case FREE:
+                layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
+                questionString = (TextView) layout.findViewById(R.id.question);
+                questionString.setText("(" + questionNumber + ") " + question.question);
+                EditText answerText = (EditText) layout.findViewById(R.id.answer);
+                answerText.setOnFocusChangeListener(question);
+                break;
+            case MULTIPLE:
+                layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
+                questionString = (TextView) layout.findViewById(R.id.question);
+                questionString.setText("(" + questionNumber + ") " + question.question);
+                LinearLayout answersLL = (LinearLayout) layout.findViewById(R.id.answers);
+                CheckBox answerCheckbox;
+                for (int i = 0; i < answersLL.getChildCount(); ++i) {
+                    answerCheckbox = (CheckBox) answersLL.getChildAt(i);
+                    answerCheckbox.setText(question.answers.get(i));
+                    answerCheckbox.setId(i);
+                    answerCheckbox.setOnClickListener(question);
+                    if (question.user_input.equalsIgnoreCase(question.answers.get(i)))
+                        answerCheckbox.setChecked(true);//retain answers
+                }
+                break;
+            case SINGLE:
+                layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
+                questionString = (TextView) layout.findViewById(R.id.question);
+                questionString.setText("(" + (questionNumber + 1) + ") " + question.question);
+                RadioGroup answersRG = (RadioGroup) layout.findViewById(R.id.answers);
+                RadioButton answerRadio;
+                for (int i = 0; i < answersRG.getChildCount(); ++i) {
+                    answerRadio = (RadioButton) answersRG.getChildAt(i);
+                    answerRadio.setText(question.answers.get(i));
+                    answerRadio.setId(i);
+                    answerRadio.setOnClickListener(question);
+                    if (question.checked_answers[i]) answerRadio.setChecked(true); //retain answers
+                }
+                break;
+        }
+        return layout;
+    }
+
+    public enum QuestionType {FREE, MULTIPLE, SINGLE}
+
+    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
+
+    public static class RetainedFragment<T> extends Fragment {
+        public T data;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //retain this fragment
+            setRetainInstance(true);
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public void setData(T data) {
+            this.data = data;
+        }
+    }
+
+    public final class Question implements View.OnClickListener, View.OnFocusChangeListener {
         public final Kana data;
         public final String question;
         public final QuestionType questionType;
         public final Vector<String> answers;
         public final KanaType answer_type;
-        public String user_input="wrong";
+        public String user_input = "wrong";
         public boolean[] checked_answers = new boolean[NUMBER_OF_MULTIPLE_ANSWERS];
 
-        public double correct=0;
+        public double correct = 0;
 
         Question(Kana data, String question, QuestionType type) {
             //free question Constructor
@@ -284,8 +352,8 @@ public class MainActivity extends AppCompatActivity {
             this.questionType = questionType;
             this.answers = answers;
             this.answer_type = null;
-            for (int i =0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i ){
-                checked_answers[i]=false;
+            for (int i = 0; i < NUMBER_OF_MULTIPLE_ANSWERS; ++i) {
+                checked_answers[i] = false;
             }
         }
 
@@ -304,83 +372,23 @@ public class MainActivity extends AppCompatActivity {
             RadioButton inputRadio = null;
 
             switch (questionType) {
-                case FREE:
-                    inputText = (EditText) v;
-                    user_input=inputText.getText().toString();
-                    break;
                 case MULTIPLE:
                     inputCheckBox = (CheckBox) v;
                     inputCheckBox.isChecked();
-                    int pos= answers.indexOf(inputCheckBox.getText().toString());
-                    checked_answers[pos]= (inputCheckBox.isChecked()) ? true:false;
+                    int pos = answers.indexOf(inputCheckBox.getText().toString());
+                    checked_answers[pos] = (inputCheckBox.isChecked()) ? true : false;
                     break;
                 case SINGLE:
                     inputRadio = (RadioButton) v;
-                    user_input=inputRadio.getText().toString();
+                    user_input = inputRadio.getText().toString();
             }
         }
-    }
 
-    private View generateQuestionView(Question question, int questionNumber) {
-        View layout = null;
-        TextView questionString;
-        LinearLayout answers = null;
-        switch (question.questionType) {
-            case FREE:
-                layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
-                questionString = (TextView) layout.findViewById(R.id.question);
-                questionString.setText("(" + questionNumber + ") " + question.question);
-                EditText answerText = (EditText) layout.findViewById(R.id.answer);
-                answerText.setOnClickListener(question);
-                break;
-            case MULTIPLE:
-                layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
-                questionString = (TextView) layout.findViewById(R.id.question);
-                questionString.setText("(" + questionNumber + ") " + question.question);
-                answers = (LinearLayout) layout.findViewById(R.id.answers);
-                CheckBox answerCheckbox;
-                for (int i = 0; i < answers.getChildCount(); ++i) {
-                    answerCheckbox = (CheckBox) answers.getChildAt(i);
-                    answerCheckbox.setText(question.answers.get(i));
-                    answerCheckbox.setId(i);
-                    answerCheckbox.setOnClickListener(question);
-                    if (question.user_input.equalsIgnoreCase(question.answers.get(i))) answerCheckbox.setChecked(true);//retain answers
-                }
-                break;
-            case SINGLE:
-                layout = getLayoutInflater().inflate(R.layout.question_radio, layoutRadio, false);
-                questionString = (TextView) layout.findViewById(R.id.question);
-                questionString.setText("(" + (questionNumber + 1) + ") " + question.question);
-                answers = (LinearLayout) layout.findViewById(R.id.answers);
-                RadioButton answerRadio;
-                for (int i = 0; i < answers.getChildCount(); ++i) {
-                    answerRadio = (RadioButton) answers.getChildAt(i);
-                    answerRadio.setText(question.answers.get(i));
-                    answerRadio.setId(i);
-                    answerRadio.setOnClickListener(question);
-                    if(question.checked_answers[i]) answerRadio.setChecked(true); //retain answers
-                }
-                break;
-        }
-        return layout;
-    }
-
-    public static class RetainedFragment<T> extends Fragment {
-        public T data;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            //retain this fragment
-            setRetainInstance(true);
-        }
-
-        public void setData(T data){
-            this.data = data;
-        }
-
-        public T getData(){
-            return data;
+        public void onFocusChange(View v, boolean hasFocus) {
+            EditText input = (EditText) v;
+            if (!hasFocus) {
+                user_input = input.getText().toString();
+            }
         }
     }
 }

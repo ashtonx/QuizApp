@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/answers"
-        style="@style/answers_linear_layout">
+        style="@style/answer_list">
 
         <CheckBox
             style="@style/answer"/>

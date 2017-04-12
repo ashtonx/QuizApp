@@ -9,20 +9,20 @@
         android:id="@+id/question"
         style="@style/question_field"/>
 
-    <LinearLayout
+    <RadioGroup
         android:id="@+id/answers"
-        style="@style/answers_linear_layout">
+        style="@style/answer_list">
 
-        <RadioButton
-            style="@style/answer"/>
+    <RadioButton
+        style="@style/answer"/>
 
-        <RadioButton
-            style="@style/answer"/>
+    <RadioButton
+        style="@style/answer"/>
 
-        <RadioButton
-            style="@style/answer"/>
+    <RadioButton
+        style="@style/answer"/>
 
-        <RadioButton
-            style="@style/answer"/>
+    <RadioButton
+        style="@style/answer"/>
+    </RadioGroup>
     </LinearLayout>
-</LinearLayout>
