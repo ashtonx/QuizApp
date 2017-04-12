@@ -49,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
     List<Question> quizData = new ArrayList<>();
     List<Kana> parsedData = null;
     Random rand = new Random();
-    private RetainedFragment<List<Question>> dataFragment;
     //layouts
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
     LinearLayout layoutScore;
     LinearLayout mainContent;
+    private RetainedFragment<List<Question>> dataFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -378,15 +378,6 @@ public class MainActivity extends AppCompatActivity {
                 user_input = input.getText().toString();
             }
         }
-    }
-
-    public final class Settings {
-        private final int NUMBER_OF_QUESTIONS = 10;
-        private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
-        private final String RETAINED_QUIZ_TAG = "quizData";
-        List<Question> quizData = new ArrayList<>();
-        List<Kana> parsedData = null;
-        private RetainedFragment<List<Question>> dataFragment;
     }
 }
 
