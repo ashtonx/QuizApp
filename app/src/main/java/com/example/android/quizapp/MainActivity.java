@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -251,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private View generateQuestionView(Question question, int questionNumber) {
+    private View generateQuestionView(final Question question, int questionNumber) {
         View layout = null;
         TextView questionString;
         switch (question.questionType) {
@@ -260,7 +262,16 @@ public class MainActivity extends AppCompatActivity {
                 questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + questionNumber + ") " + question.question);
                 EditText answerText = (EditText) layout.findViewById(R.id.answer);
-                answerText.setOnFocusChangeListener(question);
+                answerText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override
+                    public void afterTextChanged(Editable s){
+                        question.user_input = s.toString();
+                    }
+                });
                 break;
             case MULTIPLE:
                 layout = getLayoutInflater().inflate(R.layout.question_checkbox, layoutCheckbox, false);
@@ -318,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public final class Question implements View.OnClickListener, View.OnFocusChangeListener {
+    public final class Question implements View.OnClickListener {
         public final Kana data;
         public final String question;
         public final QuestionType questionType;
@@ -366,14 +377,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case SINGLE:
                     RadioButton inputRadio = (RadioButton) v;
-                    user_input = inputRadio.getText().toString();
-            }
-        }
-
-        public void onFocusChange(View v, boolean hasFocus) {
-            EditText input = (EditText) v;
-            if (!hasFocus) {
-                user_input = input.getText().toString();
+                    this.user_input = inputRadio.getText().toString();
             }
         }
     }

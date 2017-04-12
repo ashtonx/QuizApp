@@ -9,5 +9,6 @@
 
     <EditText
         android:id="@+id/answer"
+        android:focusable="true"
         style="@style/answer_edit_text"/>
 </LinearLayout>
