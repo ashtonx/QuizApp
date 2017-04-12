@@ -12,15 +12,15 @@
         style="@style/answer_list">
 
         <CheckBox
-            style="@style/answer_multiple"/>
+            style="@style/answer_multiple_group"/>
 
         <CheckBox
-            style="@style/answer_multiple"/>
+            style="@style/answer_multiple_group"/>
 
         <CheckBox
-            style="@style/answer_multiple"/>
+            style="@style/answer_multiple_group"/>
 
         <CheckBox
-            style="@style/answer_multiple"/>
+            style="@style/answer_multiple_group"/>
     </LinearLayout>
 </LinearLayout>

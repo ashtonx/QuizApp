@@ -12,15 +12,15 @@
         style="@style/answer_list">
 
     <RadioButton
-        style="@style/answer_multiple"/>
+        style="@style/answer_multiple_group"/>
 
     <RadioButton
-        style="@style/answer_multiple"/>
+        style="@style/answer_multiple_group"/>
 
     <RadioButton
-        style="@style/answer_multiple"/>
+        style="@style/answer_multiple_group"/>
 
     <RadioButton
-        style="@style/answer_multiple"/>
+        style="@style/answer_multiple_group"/>
     </RadioGroup>
     </LinearLayout>

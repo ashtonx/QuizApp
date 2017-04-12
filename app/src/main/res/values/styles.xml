@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorSecondaryDark</item>
-        <item name="android:windowSoftInputMode">stateHidden</item>
+        <item name="colorPrimary">@color/colorSecondary</item>
+        <item name="colorPrimaryDark">@color/colorSecondaryDark</item>
+        <item name="colorAccent">@color/colorSecondary</item>
+        <item name="android:windowSoftInputMode">stateHidden </item>
     </style>
 
     <style name="default_margins">
@@ -14,9 +14,8 @@
         <item name="android:layout_marginBottom">@dimen/margin</item>
         <item name="android:layout_marginLeft">@dimen/margin</item>
         <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:padding">@dimen/margin</item>
     </style>
-
-
 
     <style name="button" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
@@ -35,7 +34,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:gravity">left</item>
     </style>
 
     <style name="content" parent="default_margins">
@@ -44,26 +42,21 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="content_margins">
-        <item name="android:paddingLeft">@dimen/margin</item>
-        <item name="android:paddingRight">@dimen/margin</item>
-        <item name="android:layout_marginTop">@dimen/margin</item>
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-    </style>
-
-    <style name="question_text_view" parent="content_margins">
+    <style name="question_text_view" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
         <item name="android:textColor">@color/colorSecondaryText</item>
         <item name="android:background">@color/colorSecondary</item>
     </style>
 
-    <style name="style_answer_string" parent="content_margins">
+    <style name="style_answer_string" parent="default_margins">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Display1</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
 
     <style name="answer_edit_text" parent="style_answer_string">
@@ -72,9 +65,9 @@
         <item name="android:maxLines">1</item>
         <item name="android:inputType">text</item>
         <item name="android:hint">@string/edit_text_hint_answer</item>
-        <item name="android:state_focused">false</item>
     </style>
-    <style name="answer_multiple" parent="style_answer_string">
+
+    <style name="answer_multiple_group" parent="style_answer_string">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">@integer/answers_weight</item>
@@ -83,6 +76,7 @@
     <style name="score" parent="default_margins">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">4</item>
+        <item name="android:layout_weight">@integer/answers_weight</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Display1</item>
     </style>
 </resources>
