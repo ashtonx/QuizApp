@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/layout_checkbox"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+              style="@style/qa_style">
 
     <TextView
         android:id="@+id/question"
-        style="@style/question_field"/>
+        style="@style/question_text_view"/>
 
     <LinearLayout
         android:id="@+id/answers"
         style="@style/answer_list">
 
         <CheckBox
-            style="@style/answer"/>
+            style="@style/answer_multiple"/>
 
         <CheckBox
-            style="@style/answer"/>
+            style="@style/answer_multiple"/>
 
         <CheckBox
-            style="@style/answer"/>
+            style="@style/answer_multiple"/>
 
         <CheckBox
-            style="@style/answer"/>
+            style="@style/answer_multiple"/>
     </LinearLayout>
 </LinearLayout>

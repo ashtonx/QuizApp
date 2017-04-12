@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/layout_radio"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+              style="@style/qa_style">
 
     <TextView
         android:id="@+id/question"
-        style="@style/question_field"/>
+        style="@style/question_text_view"/>
 
     <RadioGroup
         android:id="@+id/answers"
         style="@style/answer_list">
 
     <RadioButton
-        style="@style/answer"/>
+        style="@style/answer_multiple"/>
 
     <RadioButton
-        style="@style/answer"/>
+        style="@style/answer_multiple"/>
 
     <RadioButton
-        style="@style/answer"/>
+        style="@style/answer_multiple"/>
 
     <RadioButton
-        style="@style/answer"/>
+        style="@style/answer_multiple"/>
     </RadioGroup>
     </LinearLayout>
