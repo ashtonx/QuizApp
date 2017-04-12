@@ -53,7 +53,7 @@
     </style>
 
     <style name="style_answer_string" parent="default_margins">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Display1</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body2</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:background">@color/colorPrimaryLight</item>
         <item name="android:gravity">center_vertical</item>

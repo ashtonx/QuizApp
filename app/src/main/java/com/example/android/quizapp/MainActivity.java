@@ -47,17 +47,14 @@ public class MainActivity extends AppCompatActivity {
     //GLOBAL Types
     List<Question> quizData = new ArrayList<>();
     List<Kana> parsedData = null;
-    private RetainedFragment<List<Question>> dataFragment;
-
     Random rand = new Random();
+    private RetainedFragment<List<Question>> dataFragment;
+    //layouts
     LinearLayout layoutCheckbox;
     LinearLayout layoutRadio;
     LinearLayout layoutText;
     LinearLayout layoutScore;
     LinearLayout mainContent;
-
-    public enum QuestionType {FREE, MULTIPLE, SINGLE}
-    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayScore(int pointsCorrect, int maxPoints) {
         TextView resultTV = (TextView) findViewById(R.id.scoreResult);
-        resultTV.setText(getString(R.string.score_correct) + String.valueOf(pointsCorrect)+" / "+String.valueOf(maxPoints));
+        resultTV.setText(getString(R.string.score_correct) + String.valueOf(pointsCorrect) + " / " + String.valueOf(maxPoints));
     }
 
     private List parseFile(String in) {
@@ -298,6 +295,10 @@ public class MainActivity extends AppCompatActivity {
         return layout;
     }
 
+    public enum QuestionType {FREE, MULTIPLE, SINGLE}
+
+    public enum KanaType {ROMAJI, HIRAGANA, KATAKANA}
+
     public static class RetainedFragment<T> extends Fragment {
         public T data;
 
@@ -383,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public final class Settings{
+    public final class Settings {
         private final int NUMBER_OF_QUESTIONS = 10;
         private final int NUMBER_OF_MULTIPLE_ANSWERS = 4;
         private final String RETAINED_QUIZ_TAG = "quizData";
