@@ -31,6 +31,7 @@ import static com.example.android.quizapp.MainActivity.KanaType.ROMAJI;
 import static com.example.android.quizapp.MainActivity.QuestionType.FREE;
 import static com.example.android.quizapp.MainActivity.QuestionType.MULTIPLE;
 import static com.example.android.quizapp.MainActivity.QuestionType.SINGLE;
+import static com.example.android.quizapp.R.id.answer;
 import static com.example.android.quizapp.R.id.answers;
 
 
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fm = getFragmentManager();
         dataFragment = (RetainedFragment<List<Question>>) fm.findFragmentByTag(RETAINED_QUIZ_TAG);
+
         if (dataFragment == null) {
             dataFragment = new RetainedFragment<>();
             fm.beginTransaction().add(dataFragment, RETAINED_QUIZ_TAG).commit();
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         quizData = dataFragment.getData();
         displayQuestions(quizData);
     }
+
 
     public void checkScore(View v) {
         int correct = 0;
@@ -261,7 +264,8 @@ public class MainActivity extends AppCompatActivity {
                 layout = getLayoutInflater().inflate(R.layout.question_text_entry, layoutText, false);
                 questionString = (TextView) layout.findViewById(R.id.question);
                 questionString.setText("(" + questionNumber + ") " + question.question);
-                EditText answerText = (EditText) layout.findViewById(R.id.answer);
+                EditText answerText = (EditText) layout.findViewById(answer);
+                answerText.setId(questionNumber+666); //selling soul for unique id
                 answerText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -281,11 +285,9 @@ public class MainActivity extends AppCompatActivity {
                 CheckBox answerCheckbox;
                 for (int i = 0; i < answersLL.getChildCount(); ++i) {
                     answerCheckbox = (CheckBox) answersLL.getChildAt(i);
+                    answerCheckbox.setId(((questionNumber+666)*42)+i); //selling soul for unique id
                     answerCheckbox.setText(question.answers.get(i));
-                    answerCheckbox.setId(i);
                     answerCheckbox.setOnClickListener(question);
-                    if (question.user_input.equalsIgnoreCase(question.answers.get(i)))
-                        answerCheckbox.setChecked(true);//retain answers
                 }
                 break;
             case SINGLE:
@@ -297,9 +299,8 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < answersRG.getChildCount(); ++i) {
                     answerRadio = (RadioButton) answersRG.getChildAt(i);
                     answerRadio.setText(question.answers.get(i));
-                    answerRadio.setId(i);
                     answerRadio.setOnClickListener(question);
-                    if (question.checked_answers[i]) answerRadio.setChecked(true); //retain answers
+                    answerRadio.setId(((questionNumber+666)*42)+i); //selling soul for unique id
                 }
                 break;
         }
